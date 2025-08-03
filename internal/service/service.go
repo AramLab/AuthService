@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"github.com/AramLab/AuthService/internal/models"
 	repo "github.com/AramLab/AuthService/internal/repository/postgres"
+	"github.com/AramLab/AuthService/pkg/jwt"
 	"github.com/google/uuid"
 	"go.uber.org/zap"
 	"golang.org/x/crypto/bcrypt"
@@ -19,6 +20,7 @@ type AuthService struct {
 	log          *zap.SugaredLogger
 	userSaver    UserSaver
 	userProvider UserProvider
+	jwt.TokenManager
 }
 
 //go:generate go run github.com/vektra/mockery/v2@latest --name=UserSaver --output=./mocks --case=underscore
@@ -61,7 +63,10 @@ func (a *AuthService) Login(ctx context.Context, username, password string) (str
 		a.log.Warnw("invalid password", "op", op, "username", username)
 		return "", fmt.Errorf("invalid credentials: %w", ErrInvalidCredentials)
 	}
-	token := "token123"
+	token, err := a.GenerateToken()
+	if err != nil {
+		a.log.Errorw("failed to generate token", "op", op, "username", username, "error", err)
+	}
 
 	a.log.Infow("user logged in", "op", op, "username", username)
 
