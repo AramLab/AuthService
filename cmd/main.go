@@ -4,7 +4,7 @@ import (
 	"context"
 	"github.com/AramLab/AuthService/internal/app"
 	"github.com/AramLab/AuthService/internal/config"
-	"github.com/AramLab/AuthService/internal/logger"
+	"github.com/AramLab/AuthService/pkg/logger"
 	"github.com/AramLab/AuthService/pkg/migration"
 	"github.com/pkg/errors"
 	"log"
@@ -45,6 +45,6 @@ func main() {
 
 	cancel()
 	application.GRPCServer.Stop()
-	
+
 	appLogger.Info("Shutting down gracefully...")
 }

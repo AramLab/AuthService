@@ -5,7 +5,7 @@ import (
 	grpcapp "github.com/AramLab/AuthService/internal/app/grpc"
 	"github.com/AramLab/AuthService/internal/config"
 	ps "github.com/AramLab/AuthService/internal/repository/postgres"
-	"github.com/AramLab/AuthService/internal/services/auth"
+	svc "github.com/AramLab/AuthService/internal/service"
 	"go.uber.org/zap"
 )
 
@@ -23,7 +23,7 @@ func New(ctx context.Context, log *zap.SugaredLogger, grpcPort int, cfg config.P
 	}
 
 	// инициализируем сервис(services)
-	authService := auth.NewAuthService(log, repository, repository)
+	authService := svc.NewAuthService(log, repository, repository)
 
 	grpcApp := grpcapp.NewGRPCApp(log, authService, grpcPort)
 	return &App{GRPCServer: grpcApp}

@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 	repo "github.com/AramLab/AuthService/internal/repository/postgres"
-	"github.com/AramLab/AuthService/internal/service"
+	auth "github.com/AramLab/AuthService/internal/service"
 	pb "github.com/AramLab/protos/gen/go/auth"
 	"github.com/google/uuid"
 	"google.golang.org/grpc"
@@ -55,7 +55,7 @@ func (s *server) Login(ctx context.Context, req *pb.LoginRequest) (*pb.LoginResp
 	}
 	token, err := s.auth.Login(ctx, req.Username, req.Password)
 	if err != nil {
-		if errors.Is(err, service.ErrInvalidCredentials) {
+		if errors.Is(err, auth.ErrInvalidCredentials) {
 			return nil, status.Error(codes.InvalidArgument, "invalid username or password")
 		}
 		return nil, status.Error(codes.Internal, "failed to login")

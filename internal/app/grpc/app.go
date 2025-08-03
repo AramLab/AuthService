@@ -2,7 +2,7 @@ package grpcapp
 
 import (
 	"fmt"
-	"github.com/AramLab/AuthService/internal/grpc/auth"
+	"github.com/AramLab/AuthService/internal/server/grpc/auth"
 	"go.uber.org/zap"
 	"google.golang.org/grpc"
 	"net"

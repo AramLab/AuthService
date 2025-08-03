@@ -1,4 +1,4 @@
-package auth
+package service
 
 import (
 	"context"
@@ -21,10 +21,12 @@ type AuthService struct {
 	userProvider UserProvider
 }
 
+//go:generate go run github.com/vektra/mockery/v2@latest --name=UserSaver --output=./mocks --case=underscore
 type UserSaver interface {
 	SaveUser(ctx context.Context, username string, passHash []byte, email, firstName, lastName string) (userID *uuid.UUID, err error)
 }
 
+//go:generate go run github.com/vektra/mockery/v2@latest --name=UserProvider --output=./mocks --case=underscore
 type UserProvider interface {
 	GetUser(ctx context.Context, username string) (*models.User, error)
 }

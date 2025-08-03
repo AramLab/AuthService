@@ -1,7 +1,7 @@
 package models
 
 import (
-	"go.mongodb.org/mongo-driver/x/mongo/driver/uuid"
+	"github.com/google/uuid"
 	"time"
 )
 
