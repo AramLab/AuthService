@@ -13,6 +13,7 @@ type Config struct {
 	LogLevel    string `envconfig:"LOG_LEVEL" required:"true"`
 	GrpcCfg     GrpcCfg
 	PostgresCfg PostgresCfg
+	Secret      string `envconfig:"SECRET" required:"true"`
 }
 
 type GrpcCfg struct {

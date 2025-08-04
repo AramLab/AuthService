@@ -120,6 +120,9 @@ func (u *UserRepo) GetUser(ctx context.Context, username string) (*models.User, 
 		&user.Role,
 	)
 	if err != nil {
+		if errors.Is(err, pgx.ErrNoRows) {
+			return nil, ErrUserNotFound // возвращаем свою ошибку, чтобы сервис мог проверить
+		}
 		return nil, fmt.Errorf("%s: failed to scan user: %w", op, err)
 	}
 
@@ -132,7 +135,6 @@ func (u *UserRepo) GetUser(ctx context.Context, username string) (*models.User, 
 		return nil, fmt.Errorf("%s: failed to commit transaction: %w", op, err)
 	}
 
-	// Обнуляем tx, чтобы defer не откатил её
 	tx = nil
 
 	return &user, nil

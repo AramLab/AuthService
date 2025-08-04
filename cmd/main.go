@@ -4,6 +4,7 @@ import (
 	"context"
 	"github.com/AramLab/AuthService/internal/app"
 	"github.com/AramLab/AuthService/internal/config"
+	"github.com/AramLab/AuthService/pkg/jwt"
 	"github.com/AramLab/AuthService/pkg/logger"
 	"github.com/AramLab/AuthService/pkg/migration"
 	"github.com/pkg/errors"
@@ -31,7 +32,12 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
-	application := app.New(ctx, appLogger, cfg.GrpcCfg.Port, cfg.PostgresCfg)
+	tokenManager := jwt.NewJwtManager([]byte(cfg.Secret))
+
+	application := app.New(ctx, appLogger, cfg.GrpcCfg.Port, cfg.PostgresCfg, tokenManager)
+	if application == nil {
+		log.Fatal("failed to initialize app")
+	}
 
 	go func() {
 		appLogger.Info("starting server")

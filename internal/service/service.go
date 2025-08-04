@@ -20,7 +20,7 @@ type AuthService struct {
 	log          *zap.SugaredLogger
 	userSaver    UserSaver
 	userProvider UserProvider
-	jwt.TokenManager
+	tokenManager jwt.TokenManager
 }
 
 //go:generate go run github.com/vektra/mockery/v2@latest --name=UserSaver --output=./mocks --case=underscore
@@ -33,16 +33,23 @@ type UserProvider interface {
 	GetUser(ctx context.Context, username string) (*models.User, error)
 }
 
-func NewAuthService(log *zap.SugaredLogger, saver UserSaver, provider UserProvider) *AuthService {
+func NewAuthService(log *zap.SugaredLogger, saver UserSaver, provider UserProvider, tokenManager jwt.TokenManager) *AuthService {
+	if saver == nil {
+		panic("UserSaver is nil")
+	}
+	if provider == nil {
+		panic("UserProvider is nil")
+	}
 	return &AuthService{
 		log:          log,
 		userSaver:    saver,
 		userProvider: provider,
+		tokenManager: tokenManager,
 	}
 }
 
 func (a *AuthService) Login(ctx context.Context, username, password string) (string, error) {
-	const op = "Auth.Login"
+	const op = "Serivce.Login"
 
 	log := a.log.With("op", op, "username", username)
 	log.Info("starting login flow")
@@ -63,7 +70,7 @@ func (a *AuthService) Login(ctx context.Context, username, password string) (str
 		a.log.Warnw("invalid password", "op", op, "username", username)
 		return "", fmt.Errorf("invalid credentials: %w", ErrInvalidCredentials)
 	}
-	token, err := a.GenerateToken()
+	token, err := a.tokenManager.GenerateToken()
 	if err != nil {
 		a.log.Errorw("failed to generate token", "op", op, "username", username, "error", err)
 	}
